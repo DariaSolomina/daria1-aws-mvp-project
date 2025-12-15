@@ -14,7 +14,7 @@ output "public_subnets" {
 }
 
 output "private_subnets" {
-  value = aws_subnet.private[*].id # Export subnet IDs created by `aws_subnet.private`
+  value       = aws_subnet.private[*].id # Export subnet IDs created by `aws_subnet.private`
   description = "List of IDs for private subnets"
 }
 

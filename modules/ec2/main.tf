@@ -91,7 +91,7 @@ resource "aws_instance" "web" {
   iam_instance_profile   = "ec2_profile" # Attach IAM instance profile
 
   tags = {
-    Name = "web-server"  
+    Name = "web-server"
   }
 
   root_block_device {

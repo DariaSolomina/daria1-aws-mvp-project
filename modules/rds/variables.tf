@@ -1,12 +1,12 @@
 variable "db_password" {
   description = "Password for the RDS database"
   sensitive   = true
-  type = string
+  type        = string
 }
 
 variable "db_allocated_storage" {
   default     = 20
-  type = number
+  type        = number
   description = "The amount of allocated storage for the RDS instance"
 }
 
@@ -20,7 +20,7 @@ variable "vpc_id" {
 }
 
 variable "app_sg_id" { # Security group ID of the EC2 instance (app server). This allows the database to accept traffic only from the EC2.
-type = string
+  type = string
 }
 
 variable "private_subnets" {

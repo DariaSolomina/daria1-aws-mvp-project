@@ -3,7 +3,7 @@
 # ---------------------------------------
 
 resource "aws_s3_bucket" "bucket" {
-  bucket    = var.bucket_name
+  bucket = var.bucket_name
 }
 
 # ---------------------------------------
@@ -37,13 +37,13 @@ resource "aws_s3_bucket_versioning" "versioning" {
 # ---------------------------------------
 
 resource "aws_s3_bucket_public_access_block" "public_access" {
-    bucket = aws_s3_bucket.bucket.id  # Blocking all public access unless explicitly enabled
+  bucket = aws_s3_bucket.bucket.id # Blocking all public access unless explicitly enabled
 
-    block_public_acls       = var.block_public_access
-    block_public_policy     = var.block_public_access
-    ignore_public_acls      = var.block_public_access
-    restrict_public_buckets = var.block_public_access
-  }
+  block_public_acls       = var.block_public_access
+  block_public_policy     = var.block_public_access
+  ignore_public_acls      = var.block_public_access
+  restrict_public_buckets = var.block_public_access
+}
 
 # ---------------------------------------
 # Lifecycle Rules (Optional)
@@ -56,9 +56,9 @@ resource "aws_s3_bucket_lifecycle_configuration" "lifecycle" {
     id     = "logs-lifecycle" # A unique identifier for the rule
     status = "Enabled"        # Replaces "enabled = true"
 
-  filter {
-  prefix = "logs/" # Specify the object prefix to filter lifecycle rules
-}
+    filter {
+      prefix = "logs/" # Specify the object prefix to filter lifecycle rules
+    }
     transition {
       days          = 30
       storage_class = "GLACIER" # Move data to Glacier after 30 days

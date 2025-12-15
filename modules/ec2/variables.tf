@@ -39,7 +39,7 @@ variable "allowed_ssh_ips" {
 variable "tags" {
   description = "Tags to apply to all resources"
   type        = map(string)
-  default     = {
+  default = {
     Environment = "dev"
     Owner       = "terraform-mvp"
   }

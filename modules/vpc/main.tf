@@ -2,7 +2,7 @@ resource "aws_vpc" "this" {
   cidr_block           = var.cidr_block
   enable_dns_support   = true
   enable_dns_hostnames = true
-  tags          = {
+  tags = {
     Name        = var.name
     Environment = var.env #Use 'env' variable here
     Project     = "MVP"
@@ -13,8 +13,8 @@ resource "aws_vpc" "this" {
 # Internet Gateway
 # ---------------------------------------
 resource "aws_internet_gateway" "this" {
-  vpc_id        = "vpc-0624f7e8067b54311"
-  tags          = {
+  vpc_id = "vpc-0624f7e8067b54311"
+  tags = {
     Name        = "${var.name}-igw"
     Environment = var.env #Use 'env' variable here
   }
@@ -24,13 +24,13 @@ resource "aws_internet_gateway" "this" {
 # Public Subnets
 # ---------------------------------------
 resource "aws_subnet" "public" {
-  count                   = length(var.public_subnets)
+  count = length(var.public_subnets)
 
   vpc_id                  = "vpc-0624f7e8067b54311"
   cidr_block              = var.public_subnets[count.index]
-  availability_zone       = element(var.azs,count.index)
+  availability_zone       = element(var.azs, count.index)
   map_public_ip_on_launch = true
-  tags          = {
+  tags = {
     Name        = "${var.name}-public-subnet-${count.index}"
     Environment = var.env # Use 'env' variable here
   }
@@ -66,8 +66,8 @@ resource "aws_route_table" "public" {
 # Public Route Table Association
 # ---------------------------------------
 resource "aws_route_table_association" "public_assoc" {
-  count    = length(aws_subnet.public)
-  subnet_id = aws_subnet.public[count.index].id
+  count          = length(aws_subnet.public)
+  subnet_id      = aws_subnet.public[count.index].id
   route_table_id = aws_route_table.public.id
 }
 

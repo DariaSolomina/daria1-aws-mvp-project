@@ -11,8 +11,8 @@ output "rds_endpoint" {
 }
 
 output "db_username" {
-  value = module.database.db_username #The username for connecting to the RDS database.
-  sensitive   = true
+  value     = module.database.db_username #The username for connecting to the RDS database.
+  sensitive = true
 }
 
 output "s3_bucket_name" {

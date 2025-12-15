@@ -7,17 +7,17 @@ output "ec2_public_ip" { # Public IP for accessing the instance
 }
 
 output "ec2_public_dns" { # DNS name for browser access
-  value = aws_instance.web.public_dns
+  value     = aws_instance.web.public_dns
   sensitive = false
 }
 
 output "iam_instance_profile_name" {
-  value = aws_iam_instance_profile.ec2_profile.name
+  value       = aws_iam_instance_profile.ec2_profile.name
   description = "IAM instance profile name attached to EC2 instance"
 }
 
 output "iam_role_name" {
-  value = aws_iam_role.ec2_s3_role.name
+  value       = aws_iam_role.ec2_s3_role.name
   description = "IAM role attached to EC2 instance for S3 and CloudWatch access"
 }
 

@@ -3,12 +3,12 @@
 # ---------------------------------------
 
 resource "aws_db_subnet_group" "db_group" {
-  name       = "rds-subnet-group"
+  name = "rds-subnet-group"
   subnet_ids = [
     "subnet-03e0487620591edf2",
     "subnet-02ab0a7ae6f6b0143",
     "subnet-00e3e33090e7f8d89"
-    ]
+  ]
   description = "Subnet group for RDS in VPC vpc-0624f7e8067b54311"
   tags = {
     Name = "rds-db-subnet-group"
@@ -50,16 +50,16 @@ resource "aws_security_group" "db_sg" {
 # ---------------------------------------
 
 resource "aws_db_instance" "db" {
-  allocated_storage    = var.db_allocated_storage
-  engine               = "postgres"
-  engine_version       = "12.7"
-  instance_class       = var.db_instance_class
-  username             = var.db_username
-  password             = var.db_password
-  skip_final_snapshot  = true
-  storage_encrypted    = true
-  multi_az             = false
-  db_subnet_group_name = aws_db_subnet_group.db_group.name
+  allocated_storage      = var.db_allocated_storage
+  engine                 = "postgres"
+  engine_version         = "12.7"
+  instance_class         = var.db_instance_class
+  username               = var.db_username
+  password               = var.db_password
+  skip_final_snapshot    = true
+  storage_encrypted      = true
+  multi_az               = false
+  db_subnet_group_name   = aws_db_subnet_group.db_group.name
   vpc_security_group_ids = [aws_security_group.db_sg.id]
 
   tags = {
