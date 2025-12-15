@@ -12,3 +12,6 @@ crash.log
 # Ignore variable definitions for sensitive data
 *.tfvars
 *.tfvars.json
+
+# Ignore backup directories
+.git_backup/
