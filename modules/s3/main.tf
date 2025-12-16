@@ -4,6 +4,10 @@
 
 resource "aws_s3_bucket" "bucket" {
   bucket = var.bucket_name
+
+  tags = merge(var.tags, {
+    Name = var.bucket_name
+  })
 }
 
 # ---------------------------------------
@@ -15,7 +19,7 @@ resource "aws_s3_bucket_server_side_encryption_configuration" "encryption" {
 
   rule {
     apply_server_side_encryption_by_default {
-      sse_algorithm = "AES256" # Specifies the use of AES256 encryption
+      sse_algorithm = "AES256"
     }
   }
 }
@@ -28,7 +32,7 @@ resource "aws_s3_bucket_versioning" "versioning" {
   bucket = aws_s3_bucket.bucket.id
 
   versioning_configuration {
-    status = var.enable_versioning ? "Enabled" : "Suspended" # Enable or disable versioning dynamically
+    status = var.enable_versioning ? "Enabled" : "Suspended"
   }
 }
 
@@ -37,7 +41,7 @@ resource "aws_s3_bucket_versioning" "versioning" {
 # ---------------------------------------
 
 resource "aws_s3_bucket_public_access_block" "public_access" {
-  bucket = aws_s3_bucket.bucket.id # Blocking all public access unless explicitly enabled
+  bucket = aws_s3_bucket.bucket.id
 
   block_public_acls       = var.block_public_access
   block_public_policy     = var.block_public_access
@@ -46,26 +50,27 @@ resource "aws_s3_bucket_public_access_block" "public_access" {
 }
 
 # ---------------------------------------
-# Lifecycle Rules (Optional)
+# Lifecycle Rules
 # ---------------------------------------
 
 resource "aws_s3_bucket_lifecycle_configuration" "lifecycle" {
-  bucket = aws_s3_bucket.bucket.id # Associate lifecycle settings with the bucket
+  bucket = aws_s3_bucket.bucket.id
 
   rule {
-    id     = "logs-lifecycle" # A unique identifier for the rule
-    status = "Enabled"        # Replaces "enabled = true"
+    id     = "lifecycle-rule"
+    status = "Enabled"
 
     filter {
-      prefix = "logs/" # Specify the object prefix to filter lifecycle rules
+      prefix = var.lifecycle_prefix
     }
+
     transition {
-      days          = 30
-      storage_class = "GLACIER" # Move data to Glacier after 30 days
+      days          = var.lifecycle_glacier_days
+      storage_class = "GLACIER"
     }
 
     expiration {
-      days = 365 # Permanently delete objects after 1 year
+      days = var.lifecycle_expiration_days
     }
   }
 }

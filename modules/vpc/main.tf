@@ -1,23 +1,28 @@
+# ---------------------------------------
+# VPC
+# ---------------------------------------
 resource "aws_vpc" "this" {
   cidr_block           = var.cidr_block
   enable_dns_support   = true
   enable_dns_hostnames = true
-  tags = {
+
+  tags = merge(var.tags, {
     Name        = var.name
-    Environment = var.env #Use 'env' variable here
+    Environment = var.env
     Project     = "MVP"
-  }
+  })
 }
 
 # ---------------------------------------
 # Internet Gateway
 # ---------------------------------------
 resource "aws_internet_gateway" "this" {
-  vpc_id = "vpc-0624f7e8067b54311"
-  tags = {
+  vpc_id = aws_vpc.this.id
+
+  tags = merge(var.tags, {
     Name        = "${var.name}-igw"
-    Environment = var.env #Use 'env' variable here
-  }
+    Environment = var.env
+  })
 }
 
 # ---------------------------------------
@@ -26,40 +31,43 @@ resource "aws_internet_gateway" "this" {
 resource "aws_subnet" "public" {
   count = length(var.public_subnets)
 
-  vpc_id                  = "vpc-0624f7e8067b54311"
+  vpc_id                  = aws_vpc.this.id
   cidr_block              = var.public_subnets[count.index]
   availability_zone       = element(var.azs, count.index)
   map_public_ip_on_launch = true
-  tags = {
+
+  tags = merge(var.tags, {
     Name        = "${var.name}-public-subnet-${count.index}"
-    Environment = var.env # Use 'env' variable here
-  }
+    Environment = var.env
+  })
 }
 
 # ---------------------------------------
 # Private Subnets
 # ---------------------------------------
 resource "aws_subnet" "private" {
-  count             = length(var.private_subnets)
-  cidr_block        = var.private_subnets[count.index]
-  availability_zone = var.azs[count.index]
-  vpc_id            = "vpc-0624f7e8067b54311"
+  count = length(var.private_subnets)
 
-  tags = {
-    Name = "${var.name}-private-subnet-${count.index}"
-  }
+  vpc_id            = aws_vpc.this.id
+  cidr_block        = var.private_subnets[count.index]
+  availability_zone = element(var.azs, count.index)
+
+  tags = merge(var.tags, {
+    Name        = "${var.name}-private-subnet-${count.index}"
+    Environment = var.env
+  })
 }
 
 # ---------------------------------------
 # Public Route Table
 # ---------------------------------------
 resource "aws_route_table" "public" {
-  vpc_id = "vpc-0624f7e8067b54311"
+  vpc_id = aws_vpc.this.id
 
-  tags = {
+  tags = merge(var.tags, {
     Name        = "${var.name}-public-rt"
-    Environment = var.env # Use 'env' variable here
-  }
+    Environment = var.env
+  })
 }
 
 # ---------------------------------------
@@ -80,12 +88,23 @@ resource "aws_route" "internet_access" {
   gateway_id             = aws_internet_gateway.this.id
 }
 
-resource "aws_nat_gateway" "gw" {
-  allocation_id = aws_eip.nat.id
-  subnet_id     = aws_subnet.public[0].id
+# ---------------------------------------
+# Private Route Table
+# ---------------------------------------
+resource "aws_route_table" "private" {
+  vpc_id = aws_vpc.this.id
+
+  tags = merge(var.tags, {
+    Name        = "${var.name}-private-rt"
+    Environment = var.env
+  })
 }
 
-resource "aws_eip" "nat" {
-  domain = "vpc"
-  tags   = var.tags
+# ---------------------------------------
+# Private Route Table Association
+# ---------------------------------------
+resource "aws_route_table_association" "private_assoc" {
+  count          = length(aws_subnet.private)
+  subnet_id      = aws_subnet.private[count.index].id
+  route_table_id = aws_route_table.private.id
 }

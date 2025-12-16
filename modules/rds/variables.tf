@@ -1,13 +1,6 @@
-variable "db_password" {
-  description = "Password for the RDS database"
-  sensitive   = true
+variable "vpc_id" {
+  description = "VPC ID where RDS will be deployed"
   type        = string
-}
-
-variable "db_allocated_storage" {
-  default     = 20
-  type        = number
-  description = "The amount of allocated storage for the RDS instance"
 }
 
 variable "db_subnet_ids" {
@@ -15,23 +8,9 @@ variable "db_subnet_ids" {
   type        = list(string)
 }
 
-variable "vpc_id" {
-  default = "vpc-0624f7e8067b54311"
-}
-
-variable "app_sg_id" { # Security group ID of the EC2 instance (app server). This allows the database to accept traffic only from the EC2.
-  type = string
-}
-
-variable "private_subnets" {
-  description = "List of private subnet IDs for RDS"
-  type        = list(string)
-}
-
-variable "tags" {
-  description = "Tags for all resources"
-  type        = map(string)
-  default     = {}
+variable "app_sg_id" {
+  description = "Security group ID of the EC2 instance"
+  type        = string
 }
 
 variable "db_username" {
@@ -39,8 +18,26 @@ variable "db_username" {
   type        = string
 }
 
+variable "db_password" {
+  description = "Password for the RDS database"
+  type        = string
+  sensitive   = true
+}
+
 variable "db_instance_class" {
   description = "RDS instance type"
   type        = string
   default     = "db.t3.micro"
+}
+
+variable "db_allocated_storage" {
+  description = "The amount of allocated storage for the RDS instance"
+  type        = number
+  default     = 20
+}
+
+variable "tags" {
+  description = "Tags for all resources"
+  type        = map(string)
+  default     = {}
 }

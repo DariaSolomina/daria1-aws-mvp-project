@@ -2,22 +2,9 @@
 # RDS Subnet Group
 # ---------------------------------------
 
-resource "aws_db_subnet_group" "db_group" {
-  name = "rds-subnet-group"
-  subnet_ids = [
-    "subnet-03e0487620591edf2",
-    "subnet-02ab0a7ae6f6b0143",
-    "subnet-00e3e33090e7f8d89"
-  ]
-  description = "Subnet group for RDS in VPC vpc-0624f7e8067b54311"
-  tags = {
-    Name = "rds-db-subnet-group"
-  }
-}
-
 resource "aws_db_subnet_group" "this" {
   name       = "${var.db_username}-rds-subnet-group"
-  subnet_ids = var.private_subnets
+  subnet_ids = var.db_subnet_ids
 
   tags = merge(var.tags, { "Name" = "${var.db_username}-rds-subnet-group" })
 }
@@ -27,14 +14,14 @@ resource "aws_db_subnet_group" "this" {
 # ---------------------------------------
 
 resource "aws_security_group" "db_sg" {
-  vpc_id      = "vpc-0624f7e8067b54311"
+  vpc_id      = var.vpc_id
   description = "Allow application access to RDS"
 
   ingress {
     from_port       = 5432
     to_port         = 5432
     protocol        = "tcp"
-    security_groups = [var.app_sg_id] # Allow traffic from EC2 security group
+    security_groups = [var.app_sg_id]
   }
 
   egress {
@@ -43,6 +30,8 @@ resource "aws_security_group" "db_sg" {
     protocol    = "-1"
     cidr_blocks = ["0.0.0.0/0"]
   }
+
+  tags = merge(var.tags, { "Name" = "rds-security-group" })
 }
 
 # ---------------------------------------
@@ -59,10 +48,8 @@ resource "aws_db_instance" "db" {
   skip_final_snapshot    = true
   storage_encrypted      = true
   multi_az               = false
-  db_subnet_group_name   = aws_db_subnet_group.db_group.name
+  db_subnet_group_name   = aws_db_subnet_group.this.name
   vpc_security_group_ids = [aws_security_group.db_sg.id]
 
-  tags = {
-    Name = "MVP RDS Instance"
-  }
+  tags = merge(var.tags, { "Name" = "rds-instance" })
 }

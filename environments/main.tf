@@ -53,7 +53,6 @@ module "database" {
   source               = "../modules/rds"
   vpc_id               = module.network.vpc_id
   db_subnet_ids        = module.network.private_subnets
-  private_subnets      = module.network.private_subnets
   app_sg_id            = module.compute.sg_id
   db_username          = var.db_username
   db_password          = var.db_password
